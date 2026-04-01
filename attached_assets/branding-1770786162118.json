@@ -1,0 +1,141 @@
+{
+  "colorScheme": "light",
+  "fonts": [
+    {
+      "family": "Titillium Web",
+      "role": "body"
+    }
+  ],
+  "colors": {
+    "primary": "#E9592F",
+    "accent": "#E9592F",
+    "background": "#FFFFFF",
+    "textPrimary": "#337AB7",
+    "link": "#337AB7"
+  },
+  "typography": {
+    "fontFamilies": {
+      "primary": "Titillium Web",
+      "heading": "Titillium Web"
+    },
+    "fontStacks": {
+      "heading": [
+        "Titillium Web",
+        "sans-serif"
+      ],
+      "body": [
+        "Titillium Web",
+        "sans-serif"
+      ],
+      "paragraph": [
+        "Titillium Web"
+      ]
+    },
+    "fontSizes": {
+      "h1": "36px",
+      "h2": "48px",
+      "body": "16px"
+    }
+  },
+  "spacing": {
+    "baseUnit": 4,
+    "borderRadius": "4px"
+  },
+  "components": {
+    "input": {
+      "background": "#36363A",
+      "textColor": "#FFFFFF",
+      "borderColor": "#E8E6E3",
+      "borderRadius": "0px",
+      "borderRadiusCorners": {
+        "topLeft": "0px",
+        "topRight": "0px",
+        "bottomRight": "0px",
+        "bottomLeft": "0px"
+      },
+      "shadow": "none"
+    },
+    "buttonPrimary": {
+      "background": "#E9592F",
+      "textColor": "#FFFFFF",
+      "borderRadius": "4px",
+      "borderRadiusCorners": {
+        "topLeft": "4px",
+        "topRight": "4px",
+        "bottomRight": "4px",
+        "bottomLeft": "4px"
+      },
+      "shadow": "rgba(0, 0, 0, 0.2) 0px 3px 1px -2px, rgba(0, 0, 0, 0.14) 0px 2px 2px 0px, rgba(0, 0, 0, 0.12) 0px 1px 5px 0px"
+    },
+    "buttonSecondary": {
+      "background": "#E8E6E3",
+      "textColor": "#60636C",
+      "borderColor": "#E8E6E3",
+      "borderRadius": "0px",
+      "borderRadiusCorners": {
+        "topLeft": "0px",
+        "topRight": "0px",
+        "bottomRight": "0px",
+        "bottomLeft": "0px"
+      },
+      "shadow": "none"
+    }
+  },
+  "images": {
+    "logo": "https://marble.com/img/header/marble-logo-new.svg",
+    "favicon": "https://marble.com/favicon.ico",
+    "ogImage": "https://marble.com/img/socials-logo.png",
+    "logoHref": "File saved at: attached_assets/logoHref.html",
+    "logoAlt": "Marble.com"
+  },
+  "__framework_hints": [],
+  "__llm_logo_reasoning": {
+    "selectedIndex": 1,
+    "reasoning": "Selected #0 because it is visible, located in the header, links to the homepage, and matches the brand name 'Marble.com'.",
+    "confidence": 0.95,
+    "source": "llm"
+  },
+  "__llm_button_reasoning": {
+    "primary": {
+      "index": 0,
+      "text": "Get an instant quote",
+      "reasoning": "Button #0 ('Get an instant quote') uses the vibrant brand color #E9592F and has action-oriented text, making it the primary CTA."
+    },
+    "secondary": {
+      "index": 3,
+      "text": "OK",
+      "reasoning": "Button #3 ('OK') has a different background color (#E8E6E3) and serves as a secondary action, fitting the criteria for a secondary button."
+    },
+    "confidence": 0.95
+  },
+  "personality": {
+    "tone": "professional",
+    "energy": "medium",
+    "targetAudience": "homeowners and interior designers"
+  },
+  "designSystem": {
+    "framework": "bootstrap",
+    "componentLibrary": ""
+  },
+  "confidence": {
+    "buttons": 0.95,
+    "colors": 0.9,
+    "overall": 0.925
+  },
+  "__llm_metadata": {
+    "logoSelection": {
+      "llmCalled": true,
+      "llmSucceeded": true,
+      "finalSource": "llm",
+      "rawLogoSelection": {
+        "selectedLogoIndex": 0,
+        "selectedLogoReasoning": "Selected #0 because it is visible, located in the header, links to the homepage, and matches the brand name 'Marble.com'.",
+        "confidence": 0.95
+      }
+    },
+    "buttonClassification": {
+      "llmCalled": true,
+      "llmSucceeded": true
+    }
+  }
+}

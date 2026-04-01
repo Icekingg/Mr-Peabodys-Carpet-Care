@@ -1,0 +1,16 @@
+node_modules
+dist
+.DS_Store
+server/public
+vite.config.ts.*
+*.tar.gz
+
+# Runtime uploads (not needed in repo)
+uploads/
+
+# Raw/original assets in attached_assets — large files not imported by the app
+# (.webp and .png files ARE kept — they are imported directly in source code)
+attached_assets/*.mp4
+attached_assets/*.mov
+attached_assets/*.jpg
+attached_assets/*.jpeg
