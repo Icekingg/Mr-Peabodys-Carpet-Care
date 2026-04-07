@@ -1,10 +1,23 @@
 import express, { type Request, Response, NextFunction } from "express";
+import helmet from "helmet";
 import { registerRoutes } from "./routes";
 import { serveStatic } from "./static";
 import { createServer } from "http";
 
 const app = express();
 const httpServer = createServer(app);
+
+// Security headers. CSP is disabled to avoid breaking inline styles/scripts
+// emitted by Vite and third-party widgets used by the site.
+app.use(
+  helmet({
+    contentSecurityPolicy: false,
+    crossOriginEmbedderPolicy: false,
+    crossOriginResourcePolicy: { policy: "cross-origin" },
+  }),
+);
+
+app.set("trust proxy", 1);
 
 declare module "http" {
   interface IncomingMessage {
@@ -48,7 +61,9 @@ app.use((req, res, next) => {
     const duration = Date.now() - start;
     if (path.startsWith("/api")) {
       let logLine = `${req.method} ${path} ${res.statusCode} in ${duration}ms`;
-      if (capturedJsonResponse) {
+      // Only include response bodies in development to avoid leaking PII
+      // (customer names, emails, phones) to production logs.
+      if (capturedJsonResponse && process.env.NODE_ENV !== "production") {
         logLine += ` :: ${JSON.stringify(capturedJsonResponse)}`;
       }
 
@@ -64,7 +79,13 @@ app.use((req, res, next) => {
 
   app.use((err: any, _req: Request, res: Response, next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
-    const message = err.message || "Internal Server Error";
+    const isProd = process.env.NODE_ENV === "production";
+    // Only expose error details to clients for 4xx (client errors).
+    // 5xx errors get a generic message in production to avoid leaking internals.
+    const message =
+      status < 500 || !isProd
+        ? err.message || "Internal Server Error"
+        : "Internal Server Error";
 
     console.error("Internal Server Error:", err);
 

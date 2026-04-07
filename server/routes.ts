@@ -5,6 +5,7 @@ import { z } from "zod";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
+import rateLimit from "express-rate-limit";
 
 const HOUSECALL_PRO_API_KEY = process.env.HOUSECALL_PRO_API_KEY || "";
 const HOUSECALL_PRO_BASE_URL = "https://api.housecallpro.com";
@@ -29,7 +30,7 @@ async function housecallProRequest(endpoint: string, method: string, body?: any)
 
 async function uploadFileToHousecallPro(endpoint: string, filePath: string, originalName: string) {
   const { Blob } = await import("buffer");
-  const fileBuffer = fs.readFileSync(filePath);
+  const fileBuffer = await fs.promises.readFile(filePath);
   const ext = path.extname(originalName).toLowerCase();
   const mimeTypes: Record<string, string> = {
     ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".png": "image/png",
@@ -150,15 +151,36 @@ if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
 }
 
+const ALLOWED_IMAGE_EXTS = new Set([".jpg", ".jpeg", ".png", ".gif", ".webp", ".heic", ".heif"]);
+const ALLOWED_IMAGE_MIMES = new Set([
+  "image/jpeg", "image/png", "image/gif", "image/webp", "image/heic", "image/heif",
+]);
+
 const upload = multer({
   storage: multer.diskStorage({
     destination: (_req, _file, cb) => cb(null, uploadDir),
     filename: (_req, file, cb) => {
-      const uniqueName = `${Date.now()}-${Math.round(Math.random() * 1e9)}${path.extname(file.originalname)}`;
+      const uniqueName = `${Date.now()}-${Math.round(Math.random() * 1e9)}${path.extname(file.originalname).toLowerCase()}`;
       cb(null, uniqueName);
     },
   }),
-  limits: { fileSize: 10 * 1024 * 1024 },
+  limits: { fileSize: 10 * 1024 * 1024, files: 5 },
+  fileFilter: (_req, file, cb) => {
+    const ext = path.extname(file.originalname).toLowerCase();
+    if (ALLOWED_IMAGE_EXTS.has(ext) && ALLOWED_IMAGE_MIMES.has(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error("Only image files (JPG, PNG, GIF, WEBP, HEIC) are allowed."));
+    }
+  },
+});
+
+const bookingRateLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: "Too many booking requests. Please try again later." },
 });
 
 const bookingBodySchema = z.object({
@@ -176,7 +198,7 @@ export async function registerRoutes(
   app: Express
 ): Promise<Server> {
 
-  app.post("/api/bookings", upload.array("files", 5), async (req, res) => {
+  app.post("/api/bookings", bookingRateLimiter, upload.array("files", 5), async (req, res) => {
     try {
       const body = {
         name: req.body.name,
@@ -229,8 +251,8 @@ export async function registerRoutes(
   app.get("/api/bookings/slots", async (req, res) => {
     try {
       const { date } = req.query;
-      if (!date || typeof date !== "string") {
-        return res.status(400).json({ error: "Date query parameter required." });
+      if (!date || typeof date !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+        return res.status(400).json({ error: "Valid date query parameter required (YYYY-MM-DD)." });
       }
       const bookings = await storage.getBookingsByDate(date);
       const bookedTimes = bookings.map(b => b.time);
